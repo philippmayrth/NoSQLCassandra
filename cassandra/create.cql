@@ -39,4 +39,10 @@ create table kurs_teilnehmer
     primary key ((eq_ort, titel, kurs_ort, tn_name, tn_ort))
 );
 
+create table teilnehmer_count
+(
+    titel text primary key,
+    count int
+);
+
 

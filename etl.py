@@ -97,7 +97,6 @@ where t.name is not null
 """)
     results = cursor.fetchall()
     for i in results:
-      # TODO: Date conversion
       kurs_ort = i[1]
       tn_ort = i[3]
       eq_ort = kurs_ort == tn_ort
@@ -107,6 +106,29 @@ where t.name is not null
 rows = session.execute("""select * from test.kurs_teilnehmer where eq_ort = 1 allow filtering""")
 for user_row in rows:
     print(user_row)
+
+
+
+print("i")
+print()
+with mariaDB.cursor() as cursor:
+    cursor.execute("""select k.Titel, count(k.titel) from Kurs k
+left join Angebot a on  a.KursNr = k.KursNr
+left join Nimmt_teil nt  on a.AngNr = nt.AngNr and k.KursNr = nt.KursNr
+left join Teilnehmer t on t.TnNr = nt.TnNr
+where t.name is not null
+group by k.titel
+""")
+    results = cursor.fetchall()
+    for i in results:
+      # TODO: Date conversion
+      session.execute("""insert into teilnehmer_count (titel, count) values (%s, %s)""", (i[0], i[1], ))
+
+# TODO: Room for improvement by removing the allow filtering
+rows = session.execute("""select titel, count from test.teilnehmer_count where count >= 2 allow filtering""")
+for user_row in rows:
+    print(user_row)
+
 
 
 
