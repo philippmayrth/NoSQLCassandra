@@ -19,6 +19,9 @@ print(session)
 
 
 
+# a)
+print("a")
+print()
 with mariaDB.cursor() as cursor:
     cursor.execute("""select distinct Ort from Angebot""")
     results = cursor.fetchall()
@@ -30,7 +33,55 @@ for user_row in rows:
     print(user_row)
 
 
+# b)
+print("b")
+print()
+with mariaDB.cursor() as cursor:
+    cursor.execute("""select TnNr, Name, Ort from Teilnehmer""")
+    results = cursor.fetchall()
+    for i in results:
+      session.execute("""insert into teilnehmer (tn_nr, name, ort) values (%s, %s, %s)""", (i[0], i[1], i[2]))
 
+# TODO: Room for improvement by removing the allow filtering
+rows = session.execute("""select * from teilnehmer where ort = 'Augsburg' allow filtering""")
+for user_row in rows:
+    print(user_row)
+
+
+
+# c)
+print("c")
+print()
+with mariaDB.cursor() as cursor:
+    cursor.execute("""select PersNr, Name, Gehalt from Kursleiter""")
+    results = cursor.fetchall()
+    for i in results:
+      session.execute("""insert into kursleiter (pers_nr, name, gehalt) values (%s, %s, %s)""", (i[0], i[1], i[2]))
+
+# TODO: Room for improvement by removing the allow filtering
+rows = session.execute("""select * from kursleiter where gehalt > 3000 and gehalt < 4000 allow filtering""")
+for user_row in rows:
+    print(user_row)
+
+
+
+# d+e)
+print("d+e")
+print()
+with mariaDB.cursor() as cursor:
+    cursor.execute("""select k.KursNr, k.Titel, Datum, Name 'Kursleiter' from Kurs k
+inner join Angebot a on k.KursNr = a.KursNr
+inner join Fuehrt_durch fd on fd.AngNr = a.AngNr AND fd.KursNr = k.KursNr
+inner join Kursleiter kl on kl.PersNr = fd.PersNr""")
+    results = cursor.fetchall()
+    for i in results:
+      # TODO: Date conversion
+      session.execute("""insert into kursdetail (kurs_nr, titel, datum, kursleiter) values (%s, %s, %s, %s)""", (i[0], i[1], None, i[3], ))
+
+# TODO: Room for improvement by removing the allow filtering
+rows = session.execute("""select * from kursdetail""")
+for user_row in rows:
+    print(user_row)
 
 
 mariaDB.close()
