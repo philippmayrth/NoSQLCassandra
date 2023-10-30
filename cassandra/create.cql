@@ -28,3 +28,15 @@ create table if not exists teilnehmer
     ort   text
 );
 
+
+create table kurs_teilnehmer
+(
+    eq_ort   int,
+    titel    text,
+    kurs_ort text,
+    tn_name  text,
+    tn_ort   text,
+    primary key ((eq_ort, titel, kurs_ort, tn_name, tn_ort))
+);
+
+
